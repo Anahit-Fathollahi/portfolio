@@ -5,7 +5,6 @@ import PostDetailClient from "./PostDetailClient";
 
 type PageProps = {
   params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
 async function fetchUser(id: number): Promise<User | null> {
@@ -24,8 +23,11 @@ async function fetchPost(id: string): Promise<Post | null> {
   }
 }
 
-export default async function PostDetailPage({ params }: PageProps) {
+// ✅ اضافه کردن Promise<PageProps> برای async page
+export default async function PostDetailPage(props: PageProps) {
+  const { params } = props;
   const post = await fetchPost(params.id);
+
   if (!post)
     return (
       <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200">
