@@ -2,7 +2,6 @@ import { Post } from "@/types/post";
 import { User } from "@/types/user";
 import { fetchFromApi } from "@/lib/api";
 import PostDetailClient from "./PostDetailClient";
-import { PageProps } from "next"; 
 
 async function fetchUser(id: number): Promise<User | null> {
   try {
@@ -20,10 +19,16 @@ async function fetchPost(id: string): Promise<Post | null> {
   }
 }
 
+// تعریف تایپ params برای صفحه
+interface PostDetailPageProps {
+  params: {
+    id: string;
+  };
+}
 
 export default async function PostDetailPage({
   params,
-}: PageProps<{ id: string }>) { 
+}: PostDetailPageProps) {
   const post = await fetchPost(params.id);
 
   if (!post)
