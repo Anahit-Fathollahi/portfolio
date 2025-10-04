@@ -3,9 +3,10 @@ import { User } from "@/types/user";
 import { fetchFromApi } from "@/lib/api";
 import PostDetailClient from "./PostDetailClient";
 
-interface Props {
+type PageProps = {
   params: { id: string };
-}
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
 
 async function fetchUser(id: number): Promise<User | null> {
   try {
@@ -23,7 +24,7 @@ async function fetchPost(id: string): Promise<Post | null> {
   }
 }
 
-export default async function PostDetailPage({ params }: Props) {
+export default async function PostDetailPage({ params }: PageProps) {
   const post = await fetchPost(params.id);
   if (!post)
     return (
