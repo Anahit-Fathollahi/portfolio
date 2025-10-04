@@ -17,4 +17,7 @@ export interface User {
     },
     website:string,
     userId:string,
+     company: {
+      name: string,
+    },
 }

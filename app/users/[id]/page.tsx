@@ -23,9 +23,12 @@ async function fetchUser(id: string): Promise<User | null> {
           lat: string;
           lng: string;
         };
+      }; 
+         company: {
+      name: string;
     };
-    website: string;
-    userId: string;
+      website: string;
+      userId: string;
     } = await fetchFromApi(`/users/${id}`);
 
     return {
@@ -35,8 +38,9 @@ async function fetchUser(id: string): Promise<User | null> {
       phone: data.phone,
       username: data.username,
       address: data.address,
-      website: data.website,
+      website: data.website.startsWith("http") ? data.website : `https://${data.website}`,
       userId: data.userId,
+      company: data.company,
     };
   } catch {
     return null;
@@ -46,21 +50,30 @@ async function fetchUser(id: string): Promise<User | null> {
 export default async function UserDetailPage({ params }: Props) {
   const user = await fetchUser(params.id);
 
-  if (!user) return <p className="p-6">User not found.</p>;
+  if (!user) return <p className="p-6 text-center text-red-600 font-semibold">User not found.</p>;
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6 flex flex-col items-center">
-      <h1 className="mt-4 text-2xl font-bold text-gray-800">{user.name}</h1>
-      <p className="mt-2 text-gray-600">{user.email}</p>
-
-      {/* نمایش آدرس */}
-      <div className="mt-4 text-gray-700 text-center">
-        <p><b>address: </b>
-          {user.address.city}, {user.address.street}, {user.address.suite}
+    <main className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
+      <div className="bg-white shadow-md rounded-2xl p-6 max-w-md w-full">
+        <h1 className="text-3xl font-bold text-gray-800 text-center">{user.name}</h1>
+        <p className="text-gray-600 text-center mt-2">
+          <b>email: </b>{user.email}
         </p>
-        <p><b>zipcode:</b> {user.address.zipcode}</p>
-        <p><b>phone:</b> {user.phone}</p>
-        <p><b>website:</b> {user.website}</p>
+
+        <div className="mt-6 space-y-3 text-gray-700">
+          <p>
+            <b>Address:</b> {user.address.city}, {user.address.street}, {user.address.suite}
+          </p>
+          <p><b>Zipcode:</b> {user.address.zipcode}</p>
+          <p><b>Phone:</b> {user.phone}</p>
+          <p>
+            <b>Website:</b> 
+            <a href={user.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
+              {user.website}
+            </a>
+          </p>
+          <p><b>company:</b> {user.company?.name}</p>
+        </div>
       </div>
     </main>
   );

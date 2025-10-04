@@ -1,9 +1,18 @@
-// app/posts/[id]/page.tsx
 import { Post } from "@/types/post";
+import { User } from "@/types/user";
 import { fetchFromApi } from "@/lib/api";
+import PostDetailClient from "./PostDetailClient";
 
 interface Props {
   params: { id: string };
+}
+
+async function fetchUser(id: number): Promise<User | null> {
+  try {
+    return await fetchFromApi<User>(`/users/${id}`);
+  } catch {
+    return null;
+  }
 }
 
 async function fetchPost(id: string): Promise<Post | null> {
@@ -16,14 +25,16 @@ async function fetchPost(id: string): Promise<Post | null> {
 
 export default async function PostDetailPage({ params }: Props) {
   const post = await fetchPost(params.id);
+  if (!post)
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200">
+        <p className="text-gray-700 bg-white px-6 py-4 rounded-xl shadow text-lg">
+          😕 پستی پیدا نشد.
+        </p>
+      </main>
+    );
 
-  if (!post) return <p className="p-6">Post not found.</p>;
+  const user = await fetchUser(Number(post.userId));
 
-  return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-2xl font-bold text-gray-800">{post.title}</h1>
-      <p className="mt-4 text-gray-700">{post.body}</p>
-      <p className="mt-4 text-gray-700">{post.userId}</p>
-    </main>
-  );
+  return <PostDetailClient post={post} user={user} />;
 }

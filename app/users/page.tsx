@@ -1,30 +1,13 @@
 import { fetchFromApi } from "@/lib/api";
-import { enableFetchLogger } from "@/lib/fetchLogger";
 import { User } from "@/types/user";
 
 async function fetchUsers(): Promise<User[]> {
-  const data: { id: number; name: string; email: string; phone:string; username:string ;
-  address: {
-      street: string,
-      suite: string,
-      city: string,
-      zipcode: string,
-      geo: {
-        lat: string,
-        lng: string
-      },
-    };
-    website:string
+  const data = await fetchFromApi<User[]>("/users");
 
-  }[] = await fetchFromApi("/users");
-  return data.map((u) => ({
+  return data.map(u => ({
+    ...u,
     id: u.id.toString(),
-    name: u.name,
-    email: u.email,
-    phone: u.phone,
-    username: u.username,
-    address: u.address,
-    website: u.website,
+    website: u.website.startsWith("http") ? u.website : `https://${u.website}`
   }));
 }
 
@@ -32,15 +15,32 @@ export default async function UsersPage() {
   const users = await fetchUsers();
 
   return (
-    <main className="min-h-screen bg-white p-6">
-      <h1 className="text-2xl font-bold text-gray-800">Users List</h1>
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {users.map((user) => (
-          <div key={user.id} className="flex items-center space-x-4 rounded-xl bg-gray-50 p-4 shadow">
-            <div>
-              <a href={`/users/${user.id}`} className="text-blue-600 hover:underline">{user.name}</a>
-              <p className="text-gray-600">{user.email}</p>
-            </div>
+    <main className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Users List</h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {users.map(user => (
+          <div
+            key={user.id}
+            className="flex flex-col rounded-2xl bg-white p-6 shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300"
+          >
+            <a
+              href={`/users/${user.id}`}
+              className="text-blue-700 font-semibold text-lg hover:underline"
+              aria-label={`Go to ${user.name}'s profile`}
+            >
+              {user.name}
+            </a>
+            <p className="text-gray-600 text-sm mt-1 break-words">{user.email}</p>
+            <a
+              href={user.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 text-sm mt-2 hover:text-blue-800 hover:underline break-words"
+              aria-label={`Visit ${user.name}'s website`}
+            >
+              {user.website}
+            </a>
           </div>
         ))}
       </div>
