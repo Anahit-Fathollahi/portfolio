@@ -2,6 +2,7 @@ import { Post } from "@/types/post";
 import { User } from "@/types/user";
 import { fetchFromApi } from "@/lib/api";
 import PostDetailClient from "./PostDetailClient";
+import { PageProps } from "next"; // <- اضافه کنید
 
 async function fetchUser(id: number): Promise<User | null> {
   try {
@@ -19,12 +20,10 @@ async function fetchPost(id: string): Promise<Post | null> {
   }
 }
 
-// ✅ فقط async function export کنید، Next.js خودش props را مدیریت میکند
+// ✅ اصلاح شده با PageProps
 export default async function PostDetailPage({
   params,
-}: {
-  params: { id: string };
-}) {
+}: PageProps<{ id: string }>) { // <- استفاده از PageProps
   const post = await fetchPost(params.id);
 
   if (!post)
