@@ -1,16 +1,16 @@
 import { Post } from "@/types/post";
 import { fetchFromApi } from "@/lib/api";
-
-type Props = {
-  searchParams: { page?: string };
-};
+import { PageProps } from "next"; // ✅
 
 async function fetchPosts(page: number, limit: number): Promise<Post[]> {
   return fetchFromApi<Post[]>(`/posts?_page=${page}&_limit=${limit}`);
 }
 
-export default async function PostsPage({ searchParams }: Props) {
-  const currentPage = Number(searchParams.page) || 1;
+// ⚡️ اصلاح تایپ Props با PageProps
+export default async function PostsPage({
+  searchParams,
+}: PageProps<{ page?: string }>) {
+  const currentPage = Number(searchParams?.page) || 1;
   const postsPerPage = 21;
 
   const posts = await fetchPosts(currentPage, postsPerPage);
@@ -20,12 +20,10 @@ export default async function PostsPage({ searchParams }: Props) {
 
   return (
     <main className="min-h-screen bg-gray-50 p-8">
-      {/* عنوان شیک */}
       <h1 className="text-4xl font-extrabold text-gray-900 mb-10 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
         Stories Await Your Eyes 
       </h1>
 
-      {/* لیست پست‌ها */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {posts.map((post) => (
           <div
@@ -49,7 +47,6 @@ export default async function PostsPage({ searchParams }: Props) {
         ))}
       </div>
 
-      {/* Pagination */}
       <div className="flex justify-center items-center mt-12 space-x-3">
         <a
           href={`/posts?page=${currentPage - 1}`}
