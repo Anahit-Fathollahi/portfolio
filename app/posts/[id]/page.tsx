@@ -19,14 +19,11 @@ async function fetchPost(id: string): Promise<Post | null> {
   }
 }
 
-// ✅ در Next.js 15، PageProps وجود ندارد — پس به‌صورت دستی تایپ params را تعریف می‌کنیم
-interface PostDetailPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function PostDetailPage({ params }: PostDetailPageProps) {
+export default async function PostDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const post = await fetchPost(params.id);
 
   if (!post)
